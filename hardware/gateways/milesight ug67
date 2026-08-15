@@ -1,1 +1,59 @@
+Contents
+Milesight gatewaysetup documentation	
+Register gateway to ttn console	
+Connect Milesight LoRaWAN Gateway to The Things Stack	
+Creating a basic station	
+Connecting to CUPS	
+Connecting to an LNS	
+
+ 
+Milesight gatewaysetup documentation
+
+You can also watch the tutorial here:
+https://youtu.be/9xqXTXeq93E?si=cu07hj6IBhDoOIEH
+Register gateway to ttn console
+Go to The Things network console and click on gateway. Click on register gateway
+ 
+Enter gateway EUI and click confirm and add additional information 
+
+ 
+
+ 
+ 
+
+
+
+Connect Milesight LoRaWAN Gateway to The Things Stack
+Connect to the milesight gateway wifi
+ 
+Go to chrome and type in the IPaddresshttps://192.168.1.1 to access the web GUI. Enter the username and password, then click “Login”.
+ 
+After logging the web GUI, youcanview system information and perform configuration of the gateway
+ 
+Go to packet forwarder. In multi destination - Disable embedded ns by clicking on the pen symbol on embedded ns
+ 
+Creating a basic station
+Create a new destination by clicking on the add button. Select basicstation Click save
+ 
+
+Connecting to CUPS
+url : https://eu1.cloud.thethings.network:443
+go to this url to download the ca file: https://www.thethingsindustries.com/docs/concepts/advanced/root-certificates/
+you can download the file from here: click here on isrg rootX1
+ 
+Change the file format to .trust
+ 
+Import the trustfile
+ 
+Import the cups api key you just downloaded.
+ 
+Connecting to an LNS
+url: wss://eu1.cloud.thethings.network:8887
+CA Files(*trust): you can use the same trustfile
+Client keyfile(*key): use the LNS key you downloaded before.
+ 
+Click save and apply.
+ 
+Now go to TTN console the gateway will show it is connected
+ 
 
