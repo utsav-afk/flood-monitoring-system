@@ -1,1 +1,91 @@
+Contents
+Register gateway to TTN console	
+Accessing RAK WebUI	
+BasicStation configuration	
+
+
+
+Register gateway to TTN console
+
+ 
+
+ 
+
+Generate API keys for lns and download it.This will be used to connect TTN to gateway
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Accessing RAK WebUI
+After you register the gateway go to RAK UI by connecting to the WIFI AP given by the RAK.EG -RAK7289CV2_1D39
+ 
+
+After connecting to the AP go to google and search the ip of the RAK to access its UI.IP is 192.168.230.1
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BasicStation configuration
+Go to configuration and set the workmode to Basicstation
+ 
+
+3.	Click Configure Basics Station server setup to expand the relevant settings panel. Configure the following parameters:
+•	Basics Station Server Type: LNS Server
+•	Server URL: This is the link to The Things Network server. For this tutorial, the gateway is connected to the European cluster. In the Server URL field, enter: wss://eu1.cloud.thethings.network
+•	Server Port: 8887
+•	Authentication Mode: TLS server authentication and Client token
+•	Trust (CA Certificate): For Trust, upload the Let’s Encrypt ISRG ROOT X1 Trust certificate by clicking Choose File. The certificate file can be downloaded from:
+3.	Go to this link : https://learn.rakwireless.com/hc/en-us/articles/34006038655639-how-to-connect-rak-gateways-to-ttn-v3-using-basics-station-lns#configuring-the-gateway
+You can download the file by clicking on the link as shown below
+ 
+4.	Client Token: Paste the LNS API key you generated in the previous step from the TTN console.
+
+ 
+
+Save the configuration and check TTN is the gateway is connected.If it is connected it will show in TTN as shown in the picture below.
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
