@@ -1,1 +1,83 @@
+IoT Flood Monitoring System — Field Deployment Guide
+
+
+This document describes the end-to-end process for deploying a LoRaWAN-based flood monitoring node in the field, from bench testing through The Things Network (TTN) configuration and on-site troubleshooting.
+Hardware Used
+Gateways
+•	Milesight UG67
+•	RAK7289C V2
+Sensors
+•	Dragino (water level, model TBD) 
+•	Milesight EM410-RDL
+•	Daviteq WS-LRW-RLC-01
+Deployment Sites
+•	Juving Chirrdi Khola Bridge
+•	Kaya Khet
+Network Platform
+•	The Things Network (TTN) / The Things Stack
+
+
+
+________________________________________
+1. Bench Setup & Sandbox Testing
+Before any field deployment, validate the hardware on the bench:
+1.	Power on the gateway (Milesight UG67 or RAK7289C V2) and connect it to a network with internet access.
+2.	Register the gateway in TTN under a sandbox/test application, separate from the production application, so field data isn't mixed with test data.
+3.	Power on the sensor(s) to be deployed (Dragino / Milesight EM410-RDL / Daviteq WS-LRW-RLC-01).
+4.	Register the sensor as an end device in the same sandbox TTN application.
+5.	Confirm the gateway forwards uplinks from the sensor and that TTN shows live data in the Live Data tab.
+6.	Only proceed to field deployment once this bench test is stable.
+
+
+________________________________________
+2. Site Survey & Pre-Deployment Requirements
+At the physical deployment location, confirm the following before installing anything permanently:
+•	Power availability at or near the site (grid power, or plan for solar).
+•	Internet connectivity at the gateway location (cellular/WiFi backhaul depending on gateway config).
+•	Cabling needs: 
+o	CAT6 cable for short-distance Ethernet runs.
+o	Fibre optic cable if the run between components exceeds 50 meters.
+
+
+________________________________________
+3. Field Installation Process
+3.1 Signal / Link Testing (before fixing anything permanently)
+1.	Place the gateway and sensor at their intended provisional positions.
+2.	Power on both devices.
+3.	Check TTN Live Data to confirm the gateway is receiving uplinks from the sensor.
+4.	If uplinks are not received reliably: 
+o	Reposition the sensor and/or gateway.
+o	Prefer a line-of-sight path between the sensor and gateway with no obstructions.
+o	Repeat testing after each reposition until a stable, consistent connection is achieved.
+5.	Only once uplinks are consistently received should the devices be permanently fixed in place.
+3.2 Permanent Mounting
+1.	Fix the gateway and sensor at the validated positions.
+2.	Weatherproof both units: 
+o	Protect from rain and direct weather exposure (enclosures, weatherproof housings, cable glands, etc.).
+3.3 Power System
+1.	To avoid power outages, use a solar panel + battery backup system.
+2.	Select the battery type based on the site's climate — batteries degrade faster under temperature extremes, so choose a battery rated for the expected weather conditions at the site (e.g., temperature-tolerant sealed lead-acid or equivalent).
+3.	Mount the battery and charge controller/power unit off the ground on a stable platform, with power cables (red/black) run neatly along the wall and routed away from standing water or direct rain exposure.
+Reference: See deployment photo — battery placed on an elevated crate/platform, connected via a charge controller box, with wall-routed cabling to keep the connection point protected.
+
+
+________________________________________
+4. Things Network (TTN) Configuration
+Once the gateway and sensor are physically installed and stable:
+1.	Log in to The Things Network / The Things Stack console.
+2.	Move (or re-register) the gateway and sensor from the sandbox application into the production application for the deployment site (e.g., a per-site application such as juving-chirrdi-khola-bridge or kaya-khet).
+3.	Configure the end device: 
+o	Dev EUI / App Key / App EUI: using placeholder values for now — replace with the actual device credentials before going live. 
+o	DevEUI: <DEV_EUI>AppEUI: <APP_EUI>AppKey: <APP_KEY>
+o	Payload Formatter: TODO — to be added. Paste the sensor-specific decoder (Dragino / Milesight EM410-RDL / Daviteq WS-LRW-RLC-01) under the device's Payload Formatters tab in TTN.
+o	TDC (Transmit Data Cycle / uplink interval): TODO — set according to site power budget and required monitoring frequency. Confirm value before final deployment.
+4.	Save configuration and confirm the device shows as connected/active.
+
+
+________________________________________
+5. Final Testing
+1.	Confirm uplinks are arriving consistently in TTN's Live Data for the production application.
+2.	Confirm the payload formatter correctly decodes raw payloads into readable sensor values (water level, etc.).
+3.	Confirm the configured TDC interval matches actual observed uplink frequency.
+4.	Leave the system running for a soak-test period and re-check for dropped uplinks before considering the deployment complete.
 
