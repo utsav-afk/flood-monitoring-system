@@ -1,0 +1,225 @@
+Contents
+Rak documentation	1
+Flashing image into the SD card	1
+Extracting firmware	3
+Flashing image using BalenaEtcher	5
+Configuring gateway	8
+Configuring wifi	9
+Setup RAK gateway channel plan	12
+Edit packet-forwarder config	14
+Register gateway	15
+
+
+
+
+
+
+Rak documentation
+Flashing image into the SD card
+•	Download the firmware to flash it to your computer( How to Set Up WisGate Developer Gateway Firmware - RAKwireless Learn )
+•	Select Raspberry pi Zero W
+
+
+ 
+Select LoRa
+go to neo pi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Select firm ware and download latest_firmware.zip
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Extracting firmware
+Once it is downloaded extract the zip if it fails use 7zip to extract it.
+
+
+ 
+
+ 
+Flashing image using BalenaEtcher
+After extracting the firmware insert the SD card in the in your computer and flash the image using balena etcher
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Click on flash from file and select the firmware extracted before
+
+ 
+Select the SD card and
+
+
+Click Flash
+
+ 
+ 
+
+
+After burning the firmware image onto the SD Card put the sd card int the rak gateway. After which, you can now safely power on the gateway
+warning
+Before powering the Raspberry Pi 4, you should connect the LoRa and GPS antennas. Not doing so might damage the boards.
+ 
+Configuring gateway
+You can use putty to access the gateway
+
+After you click open it will ask you the username and password.The default login is Username: pi
+Password: raspberry pi
+
+ 
+Configuring wifi
+Type the following command in the command line:
+sudo gateway-config you will go to configuration option
+
+
+Select 5. Configure WIFI. For the gateway to connect to the router, it must work in Wi-Fi Client Mode.
+
+ 
+There are 5 options to choose from in the Wi-Fi configuration menu:
+1.	Enable AP Mode/Disable Client Mode - the gateway will work in Wi-Fi Access Point Mode after rebooting while the Wi-Fi Client Mode will be disabled (this is the default mode).
+2.	Enable Client Mode/Disable AP Mode - the gateway will work in Wi-Fi Client mode after rebooting, while Wi-FI AP Mode will be disabled.
+3.	Modify SSID and pwd for AP Mode - used to modify the SSID and password of the Wi-Fi AP. Only works if the Wi-Fi AP Mode is enabled.
+4.	Add New SSID for Client - used if you want to connect to a new Wi-Fi Network. Only works in Wi-Fi Client mode.
+5.	Change Wi-Fi Country - used to modify the resident country to match Wi-Fi standards.
+warning
+To enable Wi-Fi Client Mode, you must disable first the AP Mode.
+Once Wi-Fi AP Mode has been disabled by choosing 2 Enable Client Mode/Disable AP Mode, you can now then connect to a new Wi-Fi Network by choosing 4 Add New SSID for Client.
+Select 4 Add New SSID for Client
+ 
+Select country
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Enter correct SSID
+ 
+Enter your password
+
+
+After it is connected you can exit from the configuration menu
+
+
+Setup RAK gateway channel plan
+Go to the configuration menu and select 2 Setup RAK Gateway channel plan
+
+ 
+Select 1 Server is TTN
+
+Select the correct channel plan EU 863-870
+
+ 
+After choosing the correct channel plan a success message will appear as shown below
+
+
+
+
+Edit packet-forwarder config
+Now go to 4.EdiT packet-forwarder config
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Scroll TO The end of the page and edit the following 
+gateway id : enter our gateway eui
+server address : eu1.cloud.thethings.network
+
+ 
+
+Write The edit using ctrl + o and enter 
+Save THE edit using cTRl + s and exit 
+
+
+Register gateway
+Go to TTN console and register the gateway
+enter The gateway EUI , gateway ID and name
+make sure the frequency plan is EU (SF9 for RX@-recommended)
+
+
+
+
+ 
+Make sure the frequency plan is india
