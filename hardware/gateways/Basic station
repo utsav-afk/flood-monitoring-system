@@ -1,0 +1,127 @@
+Sudo apt-get update 
+Sudo apt-get upgrade
+ 
+sudo raspi-config
+ 
+
+Enable SPI and click esc to exit raspi-config interface
+ 
+
+ install packages needed to build the packet forwarder
+sudo apt-get install git gcc make
+ 
+Build the LoRa Basics™ Station Packet Forwarder#
+ clone the The Things Stack repository:
+git clone https://github.com/lorabasics/basicstation
+ 
+
+build the LoRa Basics™ Station binary:
+cd basic station
+make platform=rpi variant=std ARCH=$(gcc --print-multiarch)
+ 
+Make sure the binary was successfully built:
+./build-rpi-std/bin/station --version
+The binary was successfully built if you see something like this:
+Station: 2.0.6(rpi/std) 2022-03-26 17:43:16
+Package: (null)
+ 
+Now install the LoRa Basics™ Station binary:
+sudo mkdir -p /opt/ttn-station/bin
+sudo cp ./build-rpi-std/bin/station /opt/ttn-station/bin/station
+Derive the Gateway EUI
+To derive the gateway EUI, you can use a combination of the gateway’s MAC address and FFFE, as follows:
+export MAC=`cat /sys/class/net/eth0/address`
+export EUI=`echo $MAC | awk -F: '{print $1$2$3 "fffe" $4$5$6}'`
+echo "The Gateway EUI is $EUI"
+The output will look something like:
+The Gateway EUI is b827ebfffee00c83
+ 
+Register the Gateway on The Things Stack
+To register your gateway on The Things Stack, follow the process described in the Adding Gateways section. For the Gateway EUI, use the EUI that was derived in the previous step.
+While registering, it is also recommended to enable the Require authenticated connection option.
+
+Create an API Key#
+Next, you need to create an API key for your gateway on The Things Stack, which will be used for your gateway’s authentication.
+Follow the instructions in the LNS section to create an API key with the Link as Gateway to a Gateway Server for traffic exchange, i.e. write uplink and read downlink right. Make sure to copy the key as you will not be able to see it again
+Configure LoRa Basics™ Station#
+The next step is to create the configuration files required for LoRa Basics™ Station gateway to connect to The Things Stack.
+On your Raspberry Pi, create a new directory:
+sudo mkdir -p /opt/ttn-station/config
+Create a configuration file tc.uri containing an LNS server address. For example, if using eu1 cluster of The Things Stack Sandbox:
+echo 'wss://eu1.cloud.thethings.network:8887' | sudo tee /opt/ttn-station/config/tc.uri
+ 
+
+Next, create the tc.key configuration file containing an authorization header. This header will contain the API Key you created in the previous step, and it will be used to authenticate your gateway’s connection.
+exportAPI_KEY="KUW5EPGCTUMGKX3XJ372RXQANJJCCDH7HCFNXPQ.INPIIZ6CATACYTNEPXDATQLMLL5FSKKRUPGQLZNUBBQG4LVU7O7Q"
+echo "Authorization: Bearer $API_KEY" | perl -p -e 's/\r\n|\n|\r/\r\n/g' | sudo tee -a /opt/ttn-station/config/tc.key
+ 
+Create the tc.trust configuration file that will be the root CA used to check your LNS server’s certificates. You can use the system CA certificates:
+sudo ln -s /etc/ssl/certs/ca-certificates.crt /opt/ttn-station/config/tc.trust
+ 
+Now, create the station.conf configuration file containing configuration options for your concentrator:
+echo '
+{
+    /* If slave-X.conf present this acts as default settings */
+    "SX1301_conf": { /* Actual channel plan is controlled by server */
+        "lorawan_public": true, /* is default */
+        "clksrc": 1, /* radio_1 provides clock to concentrator */
+        /* path to the SPI device, un-comment if not specified on the command line e.g., RADIODEV=/dev/spidev0.0 */
+        /*"device": "/dev/spidev0.0",*/
+        /* freq/enable provided by LNS - only HW specific settings listed here */
+        "radio_0": {
+            "type": "SX1257",
+            "rssi_offset": -166.0,
+            "tx_enable": true,
+            "antenna_gain": 0
+        },
+        "radio_1": {
+            "type": "SX1257",
+            "rssi_offset": -166.0,
+            "tx_enable": false
+        }
+        /* chan_multiSF_X, chan_Lora_std, chan_FSK provided by LNS */
+    },
+    "station_conf": {
+        "routerid": "'" B827EBFFFE1F7BC5"'",
+        "log_file": "stderr",
+        "log_level": "DEBUG", /* XDEBUG,DEBUG,VERBOSE,INFO,NOTICE,WARNING,ERROR,CRITICAL */
+        "log_size": 10000000,
+        "log_rotate": 3,
+        "CUPS_RESYNC_INTV": "1s"
+    }
+}
+' | sudo tee /opt/ttn-station/config/station.conf
+ 
+Finally, create the start.sh script, that will be used to reset the iC880A via its reset pin and start the packet forwarder:
+echo '#!/bin/bash
+
+# Reset iC880a PIN
+SX1301_RESET_BCM_PIN=25
+echo "$SX1301_RESET_BCM_PIN"  > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN/direction
+echo "0"   > /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN/value
+sleep 0.1
+echo "1"   > /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN/value
+sleep 0.1
+echo "0"   > /sys/class/gpio/gpio$SX1301_RESET_BCM_PIN/value
+sleep 0.1
+echo "$SX1301_RESET_BCM_PIN"  > /sys/class/gpio/unexport
+
+# Test the connection, wait if needed.
+while [[ $(ping -c1 google.com 2>&1 | grep " 0% packet loss") == "" ]]; do
+echo "[TTN Gateway]: Waiting for internet connection..."
+sleep 30
+done
+
+# Start station
+/opt/ttn-station/bin/station
+' | sudo tee /opt/ttn-station/bin/start.sh
+ 
+You can check if your start.sh script is executable with:
+sudo chmod +x /opt/ttn-station/bin/start.sh
+Test the Packet Forwarder
+Start the packet fowarder with:
+cd /opt/ttn-station/config
+sudo RADIODEV=/dev/spidev0.0 /opt/ttn-station/bin/start.sh
+This will initialize the concentrator board, connect your gateway to The Things Stack, fetch the configuration based on your frequency plan and start listening for packets. If you notice something like:
+
