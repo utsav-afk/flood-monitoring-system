@@ -1,0 +1,40 @@
+1.Go to application and click on register end device on the top right corner.
+ 
+
+2.Select enter device specifics manually and enter the specifics.
+ 
+
+
+
+
+
+3.You can find the specifics on the box.
+ 
+
+
+4.Join EUI is APP EUI from the box
+ 
+
+
+
+5.Enter the other specifics from the box
+ 
+
+6.After filling in the specifics register the end device .
+ Press the ACT button for 5 seconds to activate the CS01-LB. The Green LED will blink rapidly 5 times, and the device will enter OTAA mode for 3 seconds. Then, it will start joining the LoRaWAN network. The Green LED will remain solid for 5 seconds after successfully joining the network.
+Once the device has joined successfully, it will start uploading messages to The Things Stack, and you can see the messages in the Live data panel.
+
+ 
+
+7.To decode the data to make it readable by human you can go to the payload decoder provided by Dragino. The link is:
+
+https://github.com/dragino/dragino-end-node-decoder
+Select the decoder according to the end device and copy the decoder supported by TTN.
+
+After copying the decoder go to Payload formatter and select “custom Javascript formatter ”and paste it there.
+ 
+8.To change the time interval between two uplinks you can go to messages and select downlink. select replace downlink queue.
+FPort depends on the end device.
+01 00 00 1E -30 sec 
+01 00 003C  -1 minute
+ 
